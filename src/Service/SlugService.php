@@ -4,16 +4,12 @@ namespace App\Service;
 
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
-class Slug
+class SlugService
 {
-    public function __construct(
-
-    ) {
-    }
-
-    public function makeSlug(): void
+    public function makeSlug($string): string
     {
         $slugger = new AsciiSlugger();
-        $slug = $slugger->slug('...');
+        $slug = $slugger->slug($string);
+        return $slug;
     }
 }

@@ -5,12 +5,12 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Service\Slug;
+use App\Service\SlugService;
 
 class DemoController extends AbstractController
 {
     #[Route('/demo', name: 'app_demo')]
-    public function index(Slug $slug): Response
+    public function index(SlugService $slug): Response
     {
         $result = $slug->makeSlug('Wôrķšƥáçè ~~sèťtïñğš~~');
 
