@@ -521,6 +521,10 @@
       <tag name="doctrine.repository_service"/>
       <argument type="service" id="doctrine"/>
     </service>
+    <service id="App\Repository\MovieRepository" class="App\Repository\MovieRepository" autowire="true" autoconfigure="true">
+      <tag name="doctrine.repository_service"/>
+      <argument type="service" id="doctrine"/>
+    </service>
     <service id="App\Service\SlugService" class="App\Service\SlugService" autowire="true" autoconfigure="true"/>
     <service id="app.my_service" class="../src/Service/SlugService.php" autowire="true" autoconfigure="true"/>
     <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory"/>
@@ -5008,7 +5012,7 @@
     <service id="doctrine.orm.configuration" class="Doctrine\ORM\Configuration" abstract="true"/>
     <service id="doctrine.orm.entity_manager.abstract" class="Doctrine\ORM\EntityManager" lazy="true" abstract="true"/>
     <service id="doctrine.orm.container_repository_factory" class="Doctrine\Bundle\DoctrineBundle\Repository\ContainerRepositoryFactory">
-      <argument type="service" id=".service_locator.urpHQya"/>
+      <argument type="service" id=".service_locator.qbJ8iPm"/>
     </service>
     <service id="doctrine.orm.manager_configurator.abstract" class="Doctrine\Bundle\DoctrineBundle\ManagerConfigurator" abstract="true">
       <argument type="collection"/>
@@ -7706,6 +7710,8 @@
     <service id=".abstract.instanceof.App\Controller\ProductController" class="App\Controller\ProductController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ActorRepository" class="App\Repository\ActorRepository" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Repository\ActorRepository" class="App\Repository\ActorRepository" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\MovieRepository" class="App\Repository\MovieRepository" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Repository\MovieRepository" class="App\Repository\MovieRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".service_locator.7nzbL4K" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -8446,10 +8452,11 @@
         <argument key="doctrine.orm.messenger.doctrine_schema_listener" type="service_closure" id="doctrine.orm.messenger.doctrine_schema_listener"/>
       </argument>
     </service>
-    <service id=".service_locator.urpHQya" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.qbJ8iPm" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Repository\ActorRepository" type="service_closure" id="App\Repository\ActorRepository"/>
+        <argument key="App\Repository\MovieRepository" type="service_closure" id="App\Repository\MovieRepository"/>
       </argument>
     </service>
     <service id=".service_locator.KLVvNIq" class="Symfony\Component\DependencyInjection\ServiceLocator">
