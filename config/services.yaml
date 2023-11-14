@@ -23,3 +23,6 @@ services:
     # please note that last definitions always *replace* previous ones
     app.my_service:
         class: '../src/Service/SlugService.php'
+    App\State\UserPasswordHasher:
+        bind:
+            $processor: '@api_platform.doctrine.orm.state.persist_processor'
