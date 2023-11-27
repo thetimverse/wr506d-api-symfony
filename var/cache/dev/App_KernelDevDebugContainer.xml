@@ -289,10 +289,10 @@
     <parameter key="nelmio_cors.options_provider.config.class">Nelmio\CorsBundle\Options\ConfigProvider</parameter>
     <parameter key="api_platform.enable_entrypoint">true</parameter>
     <parameter key="api_platform.enable_docs">true</parameter>
-    <parameter key="api_platform.title">Hello API Platform</parameter>
+    <parameter key="api_platform.title">Actors/Movies App</parameter>
     <parameter key="api_platform.description"></parameter>
     <parameter key="api_platform.version">1.0.0</parameter>
-    <parameter key="api_platform.show_webby">true</parameter>
+    <parameter key="api_platform.show_webby">false</parameter>
     <parameter key="api_platform.url_generation_strategy">1</parameter>
     <parameter key="api_platform.exception_to_status" type="collection">
       <parameter key="Symfony\Component\Serializer\Exception\ExceptionInterface">400</parameter>
@@ -335,20 +335,22 @@
     <parameter key="api_platform.collection.pagination.enabled">true</parameter>
     <parameter key="api_platform.collection.pagination.partial">false</parameter>
     <parameter key="api_platform.collection.pagination.client_enabled">false</parameter>
-    <parameter key="api_platform.collection.pagination.client_items_per_page">false</parameter>
+    <parameter key="api_platform.collection.pagination.client_items_per_page">true</parameter>
     <parameter key="api_platform.collection.pagination.client_partial">false</parameter>
-    <parameter key="api_platform.collection.pagination.items_per_page">30</parameter>
+    <parameter key="api_platform.collection.pagination.items_per_page">5</parameter>
     <parameter key="api_platform.collection.pagination.maximum_items_per_page">null</parameter>
     <parameter key="api_platform.collection.pagination.page_parameter_name">page</parameter>
     <parameter key="api_platform.collection.pagination.enabled_parameter_name">pagination</parameter>
-    <parameter key="api_platform.collection.pagination.items_per_page_parameter_name">itemsPerPage</parameter>
+    <parameter key="api_platform.collection.pagination.items_per_page_parameter_name">daisy</parameter>
     <parameter key="api_platform.collection.pagination.partial_parameter_name">partial</parameter>
     <parameter key="api_platform.collection.pagination" type="collection">
+      <parameter key="items_per_page_parameter_name">daisy</parameter>
       <parameter key="enabled">true</parameter>
       <parameter key="page_parameter_name">page</parameter>
       <parameter key="enabled_parameter_name">pagination</parameter>
-      <parameter key="items_per_page_parameter_name">itemsPerPage</parameter>
       <parameter key="partial_parameter_name">partial</parameter>
+      <parameter key="items_per_page">5</parameter>
+      <parameter key="client_items_per_page">true</parameter>
     </parameter>
     <parameter key="api_platform.http_cache.etag">true</parameter>
     <parameter key="api_platform.http_cache.max_age">null</parameter>
@@ -374,6 +376,8 @@
           <parameter>Origin</parameter>
         </parameter>
       </parameter>
+      <parameter key="pagination_items_per_page">5</parameter>
+      <parameter key="pagination_client_items_per_page">true</parameter>
     </parameter>
     <parameter key="api_platform.resource_class_directories" type="collection">
       <parameter>/Users/timotheep/www/wr506d/src/ApiResource</parameter>
@@ -6251,6 +6255,20 @@
         <argument>null</argument>
       </call>
       <call method="add">
+        <argument type="service" id=".security.request_matcher.ayzt0oQ"/>
+        <argument type="collection">
+          <argument>PUBLIC_ACCESS</argument>
+        </argument>
+        <argument>null</argument>
+      </call>
+      <call method="add">
+        <argument type="service" id=".security.request_matcher.H3xuTPL"/>
+        <argument type="collection">
+          <argument>PUBLIC_ACCESS</argument>
+        </argument>
+        <argument>null</argument>
+      </call>
+      <call method="add">
         <argument type="service" id=".security.request_matcher.gjnNpJn"/>
         <argument type="collection">
           <argument>IS_AUTHENTICATED_FULLY</argument>
@@ -6902,6 +6920,22 @@
         <argument type="service" id=".security.request_matcher.d6CxbEP"/>
       </argument>
     </service>
+    <service id=".security.request_matcher.FoWKYm1" class="Symfony\Component\HttpFoundation\RequestMatcher\PathRequestMatcher">
+      <argument>^/api/graphql</argument>
+    </service>
+    <service id=".security.request_matcher.ayzt0oQ" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
+      <argument type="collection">
+        <argument type="service" id=".security.request_matcher.FoWKYm1"/>
+      </argument>
+    </service>
+    <service id=".security.request_matcher.hhUWvzv" class="Symfony\Component\HttpFoundation\RequestMatcher\PathRequestMatcher">
+      <argument>^/api/graphql/graphql_playground</argument>
+    </service>
+    <service id=".security.request_matcher.H3xuTPL" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
+      <argument type="collection">
+        <argument type="service" id=".security.request_matcher.hhUWvzv"/>
+      </argument>
+    </service>
     <service id=".security.request_matcher.gjnNpJn" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
       <argument type="collection">
         <argument type="service" id=".security.request_matcher.AMZT15Y"/>
@@ -6965,7 +6999,7 @@
     <service id="monolog.handler.main" class="Monolog\Handler\StreamHandler">
       <tag name="kernel.reset" method="reset"/>
       <argument>/Users/timotheep/www/wr506d/var/log/dev.log</argument>
-      <argument>100</argument>
+      <argument>debug</argument>
       <argument>true</argument>
       <argument>null</argument>
       <argument>false</argument>
@@ -7300,7 +7334,7 @@
     </service>
     <service id="api_platform.action.documentation" class="ApiPlatform\Documentation\Action\DocumentationAction" public="true">
       <argument type="service" id="api_platform.metadata.resource.name_collection_factory.cached"/>
-      <argument>Hello API Platform</argument>
+      <argument>Actors/Movies App</argument>
       <argument></argument>
       <argument>1.0.0</argument>
       <argument type="service" id="lexik_jwt_authentication.api_platform.openapi.factory" on-invalid="null"/>
@@ -7386,11 +7420,11 @@
     <service id="api_platform.pagination_options" class="ApiPlatform\State\Pagination\PaginationOptions">
       <argument>true</argument>
       <argument>page</argument>
-      <argument>false</argument>
-      <argument>itemsPerPage</argument>
+      <argument>true</argument>
+      <argument>daisy</argument>
       <argument>false</argument>
       <argument>pagination</argument>
-      <argument>30</argument>
+      <argument>5</argument>
       <argument>null</argument>
       <argument>false</argument>
       <argument>false</argument>
@@ -7598,7 +7632,7 @@
       </argument>
     </service>
     <service id="api_platform.openapi.options" class="ApiPlatform\OpenApi\Options">
-      <argument>Hello API Platform</argument>
+      <argument>Actors/Movies App</argument>
       <argument></argument>
       <argument>1.0.0</argument>
       <argument>false</argument>
@@ -7636,7 +7670,7 @@
     </service>
     <service id="api_platform.swagger_ui.context" class="ApiPlatform\Symfony\Bundle\SwaggerUi\SwaggerUiContext">
       <argument>true</argument>
-      <argument>true</argument>
+      <argument>false</argument>
       <argument>true</argument>
       <argument>true</argument>
       <argument>true</argument>
@@ -7811,14 +7845,14 @@
       <argument type="service" id="twig"/>
       <argument type="service" id="api_platform.router"/>
       <argument>true</argument>
-      <argument>Hello API Platform</argument>
+      <argument>Actors/Movies App</argument>
       <argument>null</argument>
     </service>
     <service id="api_platform.graphql.action.graphql_playground" class="ApiPlatform\GraphQl\Action\GraphQlPlaygroundAction" public="true">
       <argument type="service" id="twig"/>
       <argument type="service" id="api_platform.router"/>
       <argument>true</argument>
-      <argument>Hello API Platform</argument>
+      <argument>Actors/Movies App</argument>
       <argument>null</argument>
     </service>
     <service id="api_platform.graphql.error_handler" class="ApiPlatform\GraphQl\Error\ErrorHandler"/>
