@@ -1,4 +1,7 @@
 security:
+    role_hierarchy:
+        ROLE_USER: [ ROLE_USER ]
+        ROLE_ADMIN: [ ROLE_ADMIN ]
     enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
@@ -44,6 +47,7 @@ security:
         - { path: ^/api/graphql, roles: PUBLIC_ACCESS }
         - { path: ^/api/graphql/graphql_playground, roles: PUBLIC_ACCESS }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        #- { path: ^/api,       roles: PUBLIC_ACCESS }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
