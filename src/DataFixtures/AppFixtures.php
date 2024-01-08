@@ -15,14 +15,24 @@ class AppFixtures extends Fixture
         $faker->addProvider(new \Xylis\FakerCinema\Provider\Person($faker));
 
         $actors = $faker->actors($gender = null, $count = 190, $duplicates = false);
+        $directors = $faker->directors($gender = null, $count = 150, $duplicates = false);
+        $nationalities = ['Algerian','American','Argentine','Armenian','Australian','Austrian','Belgian','Brazilian','British','Canadian','Chinese','Costa Rican','Cuban','Danish','Dutch','English','Filipino','French','German','Indian','Irish','Italian','Japanese','Mexican','New Zealander','Pakistani','Portuguese','Russian','South African','Spanish','Ukrainian','Scottish','Palestinian'];
+        $awards = ['Oscars', 'Emmys' , 'Golden Globes'];
+
         foreach ($actors as $item){
             $fullname = $item; // Christian Bale
             $fullnameExploded = explode(' ', $fullname);
 
             $firstname = $fullnameExploded[0];
             $lastname = $fullnameExploded[1];
-
             $actor = new Actor();
+
+            shuffle($nationalities);
+            $nationalitiesSliced = array_slice($nationalities, 0, 1);
+            foreach ($nationalitiesSliced as $nationality) {
+                $actor->setNationality($nationality);
+            }
+
             $actor->setFirstname($firstname);
             $actor->setLastname($lastname);
             $actor->setDob($faker->dateTimeThisCentury());
@@ -47,6 +57,21 @@ class AppFixtures extends Fixture
              foreach ($createdActorsSliced as $actor) {
                  $movie->addActor($actor);
              }
+
+            shuffle($directors);
+            $directorsSliced = array_slice($directors, 0, 1);
+            foreach ($directorsSliced as $director) {
+                $movie->setDirector($director);
+            }
+
+             $movie->setReleaseDate($faker->dateTime());
+             $movie->setBoxOffice($faker->numberBetween(100000,1500000000));
+             $movie->setDescription($faker->overview);
+             $movie->setDuration($faker->numberBetween(80, 220));
+             $movie->setNote($faker->randomFloat(1, 0, 1));
+             $movie->setBudget($faker->numberBetween(1000000, 1000000000));
+             $movie->setWebsite($faker->url());
+
 
              $manager->persist($movie);
         }

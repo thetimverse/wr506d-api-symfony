@@ -12,6 +12,7 @@ use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  *  Secured resource.
@@ -22,7 +23,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[Post(security: "is_granted('ROLE_ADMIN')")]
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Security("is_granted('ROLE_USER')")]
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource]
@@ -34,6 +34,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Type('string')]
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: Movie::class, inversedBy: 'categories')]

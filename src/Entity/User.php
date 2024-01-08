@@ -40,18 +40,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue]
     private ?int $id = null;
+
     #[Assert\NotBlank]
     #[Assert\Email(message: "L'email '{{ value }}' n'est pas valide.")]
     #[Groups(['user:read', 'user:create', 'user:update'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
+
     #[ORM\Column]
     private ?string $password = null;
+
     #[Assert\NotBlank(groups: ['user:create'])]
     #[Groups(['user:create', 'user:update'])]
     private ?string $plainPassword = null;
+
     #[ORM\Column(type: 'json')]
+    ##[Assert\NotBlank(groups: ['user:create'])]
+    #[Groups(['user:create', 'user:update'])]
     private array $roles = [];
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Assert\NotBlank(groups: ['user:create'])]
+    #[Groups(['user:create', 'user:update'])]
+    private ?MediaObject $icon = null;
 
     public function getId(): ?int
     {
@@ -116,6 +127,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
+    }
+
+    public function getIcon(): ?MediaObject
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(?MediaObject $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
     }
 
 }
