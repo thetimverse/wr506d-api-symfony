@@ -18,7 +18,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use ApiPlatform\Core\Annotation\Security;
 
 /**
  *  Secured resource.
@@ -29,7 +28,6 @@ use ApiPlatform\Core\Annotation\Security;
 #[Post(security: "is_granted('ROLE_ADMIN')")]
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Security("is_granted('ROLE_USER')")]
 
 #[ORM\Entity(repositoryClass: ActorRepository::class)]
 #[ApiResource(paginationType: 'page')]
@@ -52,7 +50,7 @@ class Actor
     private ?string $firstname = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Assert\Type('date')]
+    #[Assert\Type('datetime')]
     private ?\DateTimeInterface $dob = null;
 
     #[ORM\Column]
@@ -63,11 +61,15 @@ class Actor
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Type('text')]
+    #[Assert\Choice (['Oscars', 'Emmys' , 'Golden Globes'])]
     private ?string $awards = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     private ?string $nationality = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?MediaObject $image = null;
 
     public function __construct()
     {
@@ -174,6 +176,18 @@ class Actor
     public function setNationality(?string $nationality): static
     {
         $this->nationality = $nationality;
+
+        return $this;
+    }
+
+    public function getImage(): ?MediaObject
+    {
+        return $this->image;
+    }
+
+    public function setImage(?MediaObject $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }

@@ -17,6 +17,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
 /**
  *  Secured resource.
  */
@@ -26,7 +27,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Post(security: "is_granted('ROLE_ADMIN')")]
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Security("is_granted('ROLE_USER')")]
 
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
@@ -47,11 +47,8 @@ class Movie
     private Collection $actors;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Assert\Type('date')]
+    #[Assert\Type('datetime')]
     private ?\DateTimeInterface $releaseDate = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $category = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
@@ -87,13 +84,17 @@ class Movie
     private ?string $director = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Url(message: 'The url {{ value }} is not a valid url')]
+    #[Assert\Url(message: 'L\'url {{ value }} is not a valid url')]
     private ?string $website = null;
+
+    #[ORM\ManyToMany(targetEntity: MediaObject::class, inversedBy: 'movies')]
+    private Collection $mediaobject;
 
     public function __construct()
     {
         $this->actors = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->mediaobject = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -145,18 +146,6 @@ class Movie
     public function setReleaseDate(?\DateTimeInterface $releaseDate): static
     {
         $this->releaseDate = $releaseDate;
-
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?string $category): static
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -268,6 +257,30 @@ class Movie
     public function setWebsite(?string $website): static
     {
         $this->website = $website;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MediaObject>
+     */
+    public function getMediaobject(): Collection
+    {
+        return $this->mediaobject;
+    }
+
+    public function addMediaobject(MediaObject $mediaobject): static
+    {
+        if (!$this->mediaobject->contains($mediaobject)) {
+            $this->mediaobject->add($mediaobject);
+        }
+
+        return $this;
+    }
+
+    public function removeMediaobject(MediaObject $mediaobject): static
+    {
+        $this->mediaobject->removeElement($mediaobject);
 
         return $this;
     }
