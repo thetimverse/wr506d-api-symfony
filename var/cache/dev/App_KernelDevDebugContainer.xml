@@ -350,19 +350,19 @@
     <parameter key="api_platform.collection.pagination.client_enabled">false</parameter>
     <parameter key="api_platform.collection.pagination.client_items_per_page">true</parameter>
     <parameter key="api_platform.collection.pagination.client_partial">false</parameter>
-    <parameter key="api_platform.collection.pagination.items_per_page">5</parameter>
+    <parameter key="api_platform.collection.pagination.items_per_page">20</parameter>
     <parameter key="api_platform.collection.pagination.maximum_items_per_page">null</parameter>
     <parameter key="api_platform.collection.pagination.page_parameter_name">page</parameter>
     <parameter key="api_platform.collection.pagination.enabled_parameter_name">pagination</parameter>
-    <parameter key="api_platform.collection.pagination.items_per_page_parameter_name">daisy</parameter>
+    <parameter key="api_platform.collection.pagination.items_per_page_parameter_name">items_per_page</parameter>
     <parameter key="api_platform.collection.pagination.partial_parameter_name">partial</parameter>
     <parameter key="api_platform.collection.pagination" type="collection">
-      <parameter key="items_per_page_parameter_name">daisy</parameter>
+      <parameter key="items_per_page_parameter_name">items_per_page</parameter>
       <parameter key="enabled">true</parameter>
       <parameter key="page_parameter_name">page</parameter>
       <parameter key="enabled_parameter_name">pagination</parameter>
       <parameter key="partial_parameter_name">partial</parameter>
-      <parameter key="items_per_page">5</parameter>
+      <parameter key="items_per_page">20</parameter>
       <parameter key="client_items_per_page">true</parameter>
     </parameter>
     <parameter key="api_platform.http_cache.etag">true</parameter>
@@ -389,7 +389,7 @@
           <parameter>Origin</parameter>
         </parameter>
       </parameter>
-      <parameter key="pagination_items_per_page">5</parameter>
+      <parameter key="pagination_items_per_page">20</parameter>
       <parameter key="pagination_client_items_per_page">true</parameter>
     </parameter>
     <parameter key="api_platform.resource_class_directories" type="collection">
@@ -6420,6 +6420,13 @@
         <argument>null</argument>
       </call>
       <call method="add">
+        <argument type="service" id=".security.request_matcher.mTWnyux"/>
+        <argument type="collection">
+          <argument>PUBLIC_ACCESS</argument>
+        </argument>
+        <argument>null</argument>
+      </call>
+      <call method="add">
         <argument type="service" id=".security.request_matcher.gjnNpJn"/>
         <argument type="collection">
           <argument>IS_AUTHENTICATED_FULLY</argument>
@@ -7112,6 +7119,12 @@
         <argument type="service" id=".security.request_matcher.9Hd5JGq"/>
       </argument>
     </service>
+    <service id=".security.request_matcher.mTWnyux" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
+      <argument type="collection">
+        <argument type="service" id=".security.request_matcher.aRQIDL_"/>
+        <argument type="service" id=".security.request_matcher.AMZT15Y"/>
+      </argument>
+    </service>
     <service id=".security.request_matcher.gjnNpJn" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
       <argument type="collection">
         <argument type="service" id=".security.request_matcher.AMZT15Y"/>
@@ -7601,10 +7614,10 @@
       <argument>true</argument>
       <argument>page</argument>
       <argument>true</argument>
-      <argument>daisy</argument>
+      <argument>items_per_page</argument>
       <argument>false</argument>
       <argument>pagination</argument>
-      <argument>5</argument>
+      <argument>20</argument>
       <argument>null</argument>
       <argument>false</argument>
       <argument>false</argument>
@@ -7622,8 +7635,8 @@
     <service id="api_platform.filter_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="annotated_app_entity_actor_api_platform_doctrine_orm_filter_date_filter" type="service_closure" id="annotated_app_entity_actor_api_platform_doctrine_orm_filter_date_filter"/>
         <argument key="annotated_app_entity_actor_api_platform_doctrine_orm_filter_search_filter" type="service_closure" id="annotated_app_entity_actor_api_platform_doctrine_orm_filter_search_filter"/>
+        <argument key="annotated_app_entity_category_api_platform_doctrine_orm_filter_search_filter" type="service_closure" id="annotated_app_entity_category_api_platform_doctrine_orm_filter_search_filter"/>
         <argument key="annotated_app_entity_movie_api_platform_doctrine_orm_filter_search_filter" type="service_closure" id="annotated_app_entity_movie_api_platform_doctrine_orm_filter_search_filter"/>
       </argument>
     </service>
@@ -8891,19 +8904,22 @@
       <argument type="service" id="property_accessor"/>
       <argument type="service" id="monolog.logger" on-invalid="ignore"/>
       <argument type="collection">
-        <argument key="lastname">partial</argument>
-        <argument key="movies.title">partial</argument>
+        <argument key="lastname">ipartial</argument>
+        <argument key="movies.title">ipartial</argument>
       </argument>
       <argument type="service" id="api_platform.api.identifiers_extractor" on-invalid="ignore"/>
       <argument type="service" id="serializer.name_converter.metadata_aware" on-invalid="ignore"/>
     </service>
-    <service id="annotated_app_entity_actor_api_platform_doctrine_orm_filter_date_filter" class="ApiPlatform\Doctrine\Orm\Filter\DateFilter" autowire="true">
+    <service id="annotated_app_entity_category_api_platform_doctrine_orm_filter_search_filter" class="ApiPlatform\Doctrine\Orm\Filter\SearchFilter" autowire="true">
       <tag name="api_platform.filter"/>
       <argument type="service" id="doctrine"/>
+      <argument type="service" id="api_platform.symfony.iri_converter"/>
+      <argument type="service" id="property_accessor"/>
       <argument type="service" id="monolog.logger" on-invalid="ignore"/>
       <argument type="collection">
-        <argument key="dob">null</argument>
+        <argument key="name">ipartial</argument>
       </argument>
+      <argument type="service" id="api_platform.api.identifiers_extractor" on-invalid="ignore"/>
       <argument type="service" id="serializer.name_converter.metadata_aware" on-invalid="ignore"/>
     </service>
     <service id="annotated_app_entity_movie_api_platform_doctrine_orm_filter_search_filter" class="ApiPlatform\Doctrine\Orm\Filter\SearchFilter" autowire="true">
@@ -11984,7 +12000,7 @@
     <service id=".service_locator.h8Jkkd2" alias="messenger.retry_strategy_locator"/>
     <service id=".service_locator.k3s3K.2" alias=".service_locator.dsdSIIc"/>
     <service id=".service_locator.bnaLdkn" alias="api_platform.serializer_locator"/>
-    <service id=".service_locator.Q7CUx2S" alias="api_platform.filter_locator"/>
+    <service id=".service_locator.HxsBid7" alias="api_platform.filter_locator"/>
     <service id=".service_locator.S79ueEz" alias="api_platform.graphql.type_locator"/>
     <service id=".service_locator.rN7fFER" alias="api_platform.graphql.fields_builder_locator"/>
     <service id=".service_locator.o.uf2zi" alias=".service_locator.7nzbL4K"/>

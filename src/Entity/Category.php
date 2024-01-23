@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
@@ -17,14 +19,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  *  Secured resource.
  */
-#[ApiResource(security: "is_granted('ROLE_USER')")]
+#[ApiResource]
 #[Get]
-#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+#[Put(security: "is_granted('ROLE_USER') or object.owner == user")]
+#[Post(security: "is_granted('ROLE_USER')")]
+#[Delete(security: "is_granted('ROLE_USER')")]
+#[Patch(security: "is_granted('ROLE_USER') or object.owner == user")]
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial'])]
 #[ApiResource]
 class Category
 {

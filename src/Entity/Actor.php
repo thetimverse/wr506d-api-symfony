@@ -22,17 +22,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  *  Secured resource.
  */
-#[ApiResource(security: "is_granted('ROLE_USER')")]
+#[ApiResource]
 #[Get]
-#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+#[Put(security: "is_granted('ROLE_USER') or object.owner == user")]
+#[Post(security: "is_granted('ROLE_USER')")]
+#[Delete(security: "is_granted('ROLE_USER')")]
+#[Patch(security: "is_granted('ROLE_USER') or object.owner == user")]
 
 #[ORM\Entity(repositoryClass: ActorRepository::class)]
 #[ApiResource(paginationType: 'page')]
-#[ApiFilter(SearchFilter::class, properties: ['lastname' => 'partial', 'movies.title' => 'partial'])]
-#[ApiFilter(DateFilter::class, properties: ['dob'])]
+#[ApiFilter(SearchFilter::class, properties: ['lastname' => 'ipartial', 'movies.title' => 'ipartial'])]
+// #[ApiFilter(DateFilter::class, properties: ['dob'])]
 class Actor
 {
     #[ORM\Id]
@@ -59,16 +59,11 @@ class Actor
     #[ORM\ManyToMany(targetEntity: Movie::class, mappedBy: 'actors')]
     private Collection $movies;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Assert\Type('text')]
-    #[Assert\Choice (['Oscars', 'Emmys' , 'Golden Globes'])]
-    private ?string $awards = null;
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     private ?string $nationality = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'actors')]
     private ?MediaObject $image = null;
 
     public function __construct()
@@ -156,18 +151,6 @@ class Actor
         return $this;
     }
 
-    public function getAwards(): ?string
-    {
-        return $this->awards;
-    }
-
-    public function setAwards(?string $awards): static
-    {
-        $this->awards = $awards;
-
-        return $this;
-    }
-
     public function getNationality(): ?string
     {
         return $this->nationality;
@@ -191,4 +174,6 @@ class Actor
 
         return $this;
     }
+
+
 }

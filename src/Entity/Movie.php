@@ -16,18 +16,36 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\GraphQl\DeleteMutation;
+use ApiPlatform\Metadata\GraphQl\Mutation;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
+
 
 
 /**
  *  Secured resource.
  */
-#[ApiResource(security: "is_granted('ROLE_USER')")]
-#[Get]
-#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Delete(security: "is_granted('ROLE_ADMIN')")]
-#[Patch(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-
+#[ApiResource(
+    operations: [
+        new Get(),
+        new Post(security: "is_granted('ROLE_USER')", securityMessage: 'Only admins can add books.'),
+        new GetCollection(),
+        new Delete(security: "is_granted('ROLE_USER')"),
+        new Put(security: "is_granted('ROLE_USER')"),
+        new Patch(security: "is_granted('ROLE_USER')"),
+    ],
+    paginationType: 'page',
+    graphQlOperations: [
+        new Query(),
+        new QueryCollection(),
+        new DeleteMutation(security: "is_granted('ROLE_ADMIN')", name: 'delete'),
+        new Mutation(security: "is_granted('ROLE_ADMIN')", name: 'create'),
+        new Mutation(security: "is_granted('ROLE_ADMIN')", name: 'update'),
+    ]
+)]
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
 #[ApiResource]

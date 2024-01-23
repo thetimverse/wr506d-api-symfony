@@ -55,9 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword = null;
 
     #[ORM\Column(type: 'json')]
-    ##[Assert\NotBlank(groups: ['user:create'])]
-    #[Groups(['user:create', 'user:update'])]
-    private array $roles = [];
+    private array $roles = ["ROLE_USER"];
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[Assert\NotBlank(groups: ['user:create'])]
