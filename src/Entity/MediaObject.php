@@ -59,18 +59,22 @@ class MediaObject
     public ?string $contentUrl = null;
 
     #[Vich\UploadableField(mapping: "media_object", fileNameProperty: "filePath")]
-    #[Assert\NotNull(groups: ['media_object_create'])]
+    #[Assert\NotNull(groups: ['media_object_create', 'media_object:read'])]
     public ?File $file = null;
 
     #[ORM\Column(nullable: true)]
     public ?string $filePath = null;
 
-    #[ORM\ManyToMany(targetEntity: Movie::class, mappedBy: 'mediaobject')]
+    #[ORM\ManyToMany(targetEntity: Movie::class, mappedBy: 'mediaobject', cascade: ['persist'])]
     private Collection $movies;
+
+    #[ORM\OneToMany(mappedBy: 'image', targetEntity: Actor::class)]
+    private Collection $actors;
 
     public function __construct()
     {
         $this->movies = new ArrayCollection();
+        $this->actors = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -100,6 +104,48 @@ class MediaObject
     {
         if ($this->movies->removeElement($movie)) {
             $movie->removeMediaobject($this);
+        }
+
+        return $this;
+    }
+
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    public function setfilePath(string $filePath)
+    {
+        $this->filePath = $filePath;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Actor>
+     */
+    public function getActors(): Collection
+    {
+        return $this->actors;
+    }
+
+    public function addActor(Actor $actor): static
+    {
+        if (!$this->actors->contains($actor)) {
+            $this->actors->add($actor);
+            $actor->setImage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActor(Actor $actor): static
+    {
+        if ($this->actors->removeElement($actor)) {
+            // set the owning side to null (unless already changed)
+            if ($actor->getImage() === $this) {
+                $actor->setImage(null);
+            }
         }
 
         return $this;
