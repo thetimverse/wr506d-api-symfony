@@ -20,6 +20,6 @@ api_platform:
     #                enabled: true
     collection:
         pagination:
-            items_per_page_parameter_name: 'items_per_page'
+            items_per_page_parameter_name: 'itemsPerPage'
 
 

@@ -354,10 +354,10 @@
     <parameter key="api_platform.collection.pagination.maximum_items_per_page">null</parameter>
     <parameter key="api_platform.collection.pagination.page_parameter_name">page</parameter>
     <parameter key="api_platform.collection.pagination.enabled_parameter_name">pagination</parameter>
-    <parameter key="api_platform.collection.pagination.items_per_page_parameter_name">items_per_page</parameter>
+    <parameter key="api_platform.collection.pagination.items_per_page_parameter_name">itemsPerPage</parameter>
     <parameter key="api_platform.collection.pagination.partial_parameter_name">partial</parameter>
     <parameter key="api_platform.collection.pagination" type="collection">
-      <parameter key="items_per_page_parameter_name">items_per_page</parameter>
+      <parameter key="items_per_page_parameter_name">itemsPerPage</parameter>
       <parameter key="enabled">true</parameter>
       <parameter key="page_parameter_name">page</parameter>
       <parameter key="enabled_parameter_name">pagination</parameter>
@@ -593,11 +593,8 @@
     <service id="App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" autoconfigure="true">
       <tag name="doctrine.fixture.orm"/>
     </service>
-    <service id="App\EventListener\EventListener" class="App\EventListener\EventListener" autowire="true" autoconfigure="true">
-      <tag name="container.error" message="The autoloader expected class &quot;App\EventListener\EventListener&quot; to be defined in file &quot;/Users/timotheep/www/wr506d/vendor/composer/../../src/EventListener/EventListener.php&quot;. The file was found but the class was not in it, the class name or namespace probably has a typo."/>
-    </service>
-    <service id="App\EventSubscriber\EventSubscriber" class="App\EventSubscriber\EventSubscriber" autowire="true" autoconfigure="true">
-      <tag name="container.error" message="The autoloader expected class &quot;App\EventSubscriber\EventSubscriber&quot; to be defined in file &quot;/Users/timotheep/www/wr506d/vendor/composer/../../src/EventSubscriber/EventSubscriber.php&quot;. The file was found but the class was not in it, the class name or namespace probably has a typo."/>
+    <service id="App\EventListener\AuthenticationSuccessListener" class="App\EventListener\AuthenticationSuccessListener" autowire="true" autoconfigure="true">
+      <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_authentication_success" method="onAuthenticationSuccessResponse"/>
     </service>
     <service id="App\Repository\ActorRepository" class="App\Repository\ActorRepository" autowire="true" autoconfigure="true">
       <tag name="doctrine.repository_service"/>
@@ -626,9 +623,6 @@
       <argument type="service" id="security.user_password_hasher"/>
     </service>
     <service id="app.my_service" class="../src/Service/SlugService.php" autowire="true" autoconfigure="true"/>
-    <service id="App\EventListener\AuthenticationSuccessListener" class="App\EventListener\AuthenticationSuccessListener" autowire="true" autoconfigure="true">
-      <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_authentication_success" method="onAuthenticationSuccessResponse"/>
-    </service>
     <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory"/>
     <service id="argument_resolver.backed_enum_resolver" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\BackedEnumValueResolver">
       <tag priority="100" name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\BackedEnumValueResolver">controller.argument_value_resolver</tag>
@@ -6450,6 +6444,13 @@
         </argument>
         <argument>null</argument>
       </call>
+      <call method="add">
+        <argument type="service" id=".security.request_matcher.7FD9LYg"/>
+        <argument type="collection">
+          <argument>PUBLIC_ACCESS</argument>
+        </argument>
+        <argument>null</argument>
+      </call>
     </service>
     <service id="security.context_listener" class="Symfony\Component\Security\Http\Firewall\ContextListener">
       <tag name="monolog.logger" channel="security"/>
@@ -7147,6 +7148,14 @@
         <argument type="service" id=".security.request_matcher.AMZT15Y"/>
       </argument>
     </service>
+    <service id=".security.request_matcher.7AToz93" class="Symfony\Component\HttpFoundation\RequestMatcher\PathRequestMatcher">
+      <argument>^/api/movies</argument>
+    </service>
+    <service id=".security.request_matcher.7FD9LYg" class="Symfony\Component\HttpFoundation\ChainRequestMatcher">
+      <argument type="collection">
+        <argument type="service" id=".security.request_matcher.7AToz93"/>
+      </argument>
+    </service>
     <service id="security.command.user_password_hash" class="Symfony\Component\PasswordHasher\Command\UserPasswordHashCommand">
       <tag name="console.command"/>
       <tag name="container.no_preload"/>
@@ -7631,7 +7640,7 @@
       <argument>true</argument>
       <argument>page</argument>
       <argument>true</argument>
-      <argument>items_per_page</argument>
+      <argument>itemsPerPage</argument>
       <argument>false</argument>
       <argument>pagination</argument>
       <argument>20</argument>
@@ -7652,8 +7661,10 @@
     <service id="api_platform.filter_locator" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
+        <argument key="annotated_app_entity_actor_api_platform_doctrine_orm_filter_order_filter" type="service_closure" id="annotated_app_entity_actor_api_platform_doctrine_orm_filter_order_filter"/>
         <argument key="annotated_app_entity_actor_api_platform_doctrine_orm_filter_search_filter" type="service_closure" id="annotated_app_entity_actor_api_platform_doctrine_orm_filter_search_filter"/>
         <argument key="annotated_app_entity_category_api_platform_doctrine_orm_filter_search_filter" type="service_closure" id="annotated_app_entity_category_api_platform_doctrine_orm_filter_search_filter"/>
+        <argument key="annotated_app_entity_movie_api_platform_doctrine_orm_filter_order_filter" type="service_closure" id="annotated_app_entity_movie_api_platform_doctrine_orm_filter_order_filter"/>
         <argument key="annotated_app_entity_movie_api_platform_doctrine_orm_filter_search_filter" type="service_closure" id="annotated_app_entity_movie_api_platform_doctrine_orm_filter_search_filter"/>
       </argument>
     </service>
@@ -8914,6 +8925,17 @@
       <argument type="service" id="vich_uploader.metadata_reader"/>
       <argument type="service" id="vich_uploader.upload_handler"/>
     </service>
+    <service id="annotated_app_entity_actor_api_platform_doctrine_orm_filter_order_filter" class="ApiPlatform\Doctrine\Orm\Filter\OrderFilter" autowire="true">
+      <tag name="api_platform.filter"/>
+      <argument type="service" id="doctrine"/>
+      <argument>order</argument>
+      <argument type="service" id="monolog.logger" on-invalid="ignore"/>
+      <argument type="collection">
+        <argument key="id">null</argument>
+      </argument>
+      <argument type="service" id="serializer.name_converter.metadata_aware" on-invalid="ignore"/>
+      <argument>null</argument>
+    </service>
     <service id="annotated_app_entity_actor_api_platform_doctrine_orm_filter_search_filter" class="ApiPlatform\Doctrine\Orm\Filter\SearchFilter" autowire="true">
       <tag name="api_platform.filter"/>
       <argument type="service" id="doctrine"/>
@@ -8922,6 +8944,7 @@
       <argument type="service" id="monolog.logger" on-invalid="ignore"/>
       <argument type="collection">
         <argument key="lastname">ipartial</argument>
+        <argument key="firstname">ipartial</argument>
         <argument key="movies.title">ipartial</argument>
       </argument>
       <argument type="service" id="api_platform.api.identifiers_extractor" on-invalid="ignore"/>
@@ -8950,6 +8973,17 @@
       </argument>
       <argument type="service" id="api_platform.api.identifiers_extractor" on-invalid="ignore"/>
       <argument type="service" id="serializer.name_converter.metadata_aware" on-invalid="ignore"/>
+    </service>
+    <service id="annotated_app_entity_movie_api_platform_doctrine_orm_filter_order_filter" class="ApiPlatform\Doctrine\Orm\Filter\OrderFilter" autowire="true">
+      <tag name="api_platform.filter"/>
+      <argument type="service" id="doctrine"/>
+      <argument>order</argument>
+      <argument type="service" id="monolog.logger" on-invalid="ignore"/>
+      <argument type="collection">
+        <argument key="id">null</argument>
+      </argument>
+      <argument type="service" id="serializer.name_converter.metadata_aware" on-invalid="ignore"/>
+      <argument>null</argument>
     </service>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\CreateMediaObjectAction" class="App\Controller\CreateMediaObjectAction" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\CreateMediaObjectAction" class="App\Controller\CreateMediaObjectAction" autowire="true" abstract="true"/>
@@ -12017,7 +12051,7 @@
     <service id=".service_locator.h8Jkkd2" alias="messenger.retry_strategy_locator"/>
     <service id=".service_locator.k3s3K.2" alias=".service_locator.dsdSIIc"/>
     <service id=".service_locator.bnaLdkn" alias="api_platform.serializer_locator"/>
-    <service id=".service_locator.HxsBid7" alias="api_platform.filter_locator"/>
+    <service id=".service_locator.0jEjTdX" alias="api_platform.filter_locator"/>
     <service id=".service_locator.S79ueEz" alias="api_platform.graphql.type_locator"/>
     <service id=".service_locator.rN7fFER" alias="api_platform.graphql.fields_builder_locator"/>
     <service id=".service_locator.o.uf2zi" alias=".service_locator.7nzbL4K"/>

@@ -16,6 +16,10 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\DeleteMutation;
+use ApiPlatform\Metadata\GraphQl\Mutation;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
 
 #[Vich\Uploadable]
 #[ORM\Entity]
@@ -47,7 +51,15 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             deserialize: false
         )
     ],
-    normalizationContext: ['groups' => ['media_object:read']]
+    normalizationContext: ['groups' => ['media_object:read']],
+    paginationType: 'page',
+    graphQlOperations: [
+        new Query(),
+        new QueryCollection(),
+        new DeleteMutation(security: "is_granted('ROLE_USER')", name: 'delete'),
+        new Mutation(security: "is_granted('ROLE_USER')", name: 'create'),
+        new Mutation(security: "is_granted('ROLE_USER')", name: 'update'),
+    ]
 )]
 class MediaObject
 {

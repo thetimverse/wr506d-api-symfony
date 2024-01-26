@@ -15,16 +15,43 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\GraphQl\DeleteMutation;
+use ApiPlatform\Metadata\GraphQl\Mutation;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
 
 /**
  *  Secured resource.
  */
-#[ApiResource]
-#[Get]
-#[Put(security: "is_granted('ROLE_USER') or object.owner == user")]
-#[Post(security: "is_granted('ROLE_USER')")]
-#[Delete(security: "is_granted('ROLE_USER')")]
-#[Patch(security: "is_granted('ROLE_USER') or object.owner == user")]
+// #[ApiResource]
+// #[Get]
+// #[Put(security: "is_granted('ROLE_USER') or object.owner == user")]
+// #[Post(security: "is_granted('ROLE_USER')")]
+// #[Delete(security: "is_granted('ROLE_USER')")]
+// #[Patch(security: "is_granted('ROLE_USER') or object.owner == user")]
+
+/**
+ *  Secured resource.
+ */
+#[ApiResource(
+    operations: [
+        new Get(),
+        new Post(security: "is_granted('ROLE_USER')", securityMessage: 'Only admins can add books.'),
+        new GetCollection(),
+        new Delete(security: "is_granted('ROLE_USER')"),
+        new Put(security: "is_granted('ROLE_USER')"),
+        new Patch(security: "is_granted('ROLE_USER')"),
+    ],
+    paginationType: 'page',
+    graphQlOperations: [
+        new Query(),
+        new QueryCollection(),
+        new DeleteMutation(security: "is_granted('ROLE_USER')", name: 'delete'),
+        new Mutation(security: "is_granted('ROLE_USER')", name: 'create'),
+    ]
+)]
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial'])]

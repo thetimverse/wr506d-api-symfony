@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
@@ -41,15 +42,16 @@ use ApiPlatform\Metadata\GraphQl\QueryCollection;
     graphQlOperations: [
         new Query(),
         new QueryCollection(),
-        new DeleteMutation(security: "is_granted('ROLE_ADMIN')", name: 'delete'),
-        new Mutation(security: "is_granted('ROLE_ADMIN')", name: 'create'),
-        new Mutation(security: "is_granted('ROLE_ADMIN')", name: 'update'),
+        new DeleteMutation(security: "is_granted('ROLE_USER')", name: 'delete'),
+        new Mutation(security: "is_granted('ROLE_USER')", name: 'create'),
+        // new Mutation(name: 'create'),
+        new Mutation(security: "is_granted('ROLE_USER')", name: 'update'),
     ]
 )]
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
-#[ApiResource]
 #[ApiFilter(SearchFilter::class, properties: ['title' => 'ipartial'])]
+#[ApiFilter(OrderFilter::class, properties: ['id'])]
 class Movie
 {
     #[ORM\Id]
